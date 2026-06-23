@@ -15,16 +15,16 @@ def calculate_swing_score(row: Dict) -> Dict:
     plus_di = row.get("plus_di", 0) or 0
     minus_di = row.get("minus_di", 0) or 0
 
-    cmp_price = row.get("cmp", 0) or 0
+    # FIX
+    cmp_price = row.get("close", 0) or 0
+
     ema20 = row.get("ema20", 0) or 0
     ema50 = row.get("ema50", 0) or 0
-
     supertrend = row.get("supertrend", 0) or 0
 
     volume = row.get("volume", 0) or 0
     volume_avg20 = row.get("volume_avg20", 0) or 0
 
-    # RSI (15)
     if 55 <= rsi <= 75:
         score += 15
     elif 50 <= rsi <= 80:
@@ -32,11 +32,9 @@ def calculate_swing_score(row: Dict) -> Dict:
     elif rsi > 45:
         score += 5
 
-    # MACD (20)
     if macd > macd_signal:
         score += 20
 
-    # ADX (15)
     if adx >= 30:
         score += 15
     elif adx >= 25:
@@ -44,21 +42,17 @@ def calculate_swing_score(row: Dict) -> Dict:
     elif adx >= 20:
         score += 5
 
-    # DI Trend (10)
     if plus_di > minus_di:
         score += 10
 
-    # EMA Alignment (15)
     if cmp_price > ema20 > ema50:
         score += 15
     elif cmp_price > ema20:
         score += 8
 
-    # Supertrend (15)
     if cmp_price > supertrend:
         score += 15
 
-    # Volume Expansion (10)
     if volume_avg20 > 0:
         ratio = volume / volume_avg20
 

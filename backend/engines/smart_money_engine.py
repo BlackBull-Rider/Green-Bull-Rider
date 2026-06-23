@@ -16,27 +16,24 @@ def calculate_smart_money_score(row: Dict) -> Dict:
     volume = row.get("volume", 0) or 0
     volume_avg20 = row.get("volume_avg20", 0) or 0
 
-    cmp_price = row.get("cmp", 0) or 0
-    vwap = row.get("vwap", 0) or 0
+    # FIX
+    cmp_price = row.get("close", 0) or 0
 
+    vwap = row.get("vwap", 0) or 0
     atr = row.get("atr", 0) or 0
     adx = row.get("adx", 0) or 0
 
     relative_strength = row.get("relative_strength", 0) or 0
 
-    # Breakout Score (25)
     score += min(25, breakout_score)
 
-    # Swing Score (15)
     score += min(15, swing_score / 2)
 
-    # Trend (15)
     if trend == "BULLISH":
         score += 15
     elif trend == "UPTREND":
         score += 10
 
-    # Volume Expansion (15)
     if volume_avg20 > 0:
         ratio = volume / volume_avg20
 
@@ -47,11 +44,9 @@ def calculate_smart_money_score(row: Dict) -> Dict:
         elif ratio >= 1.2:
             score += 5
 
-    # VWAP Position (10)
     if cmp_price > vwap:
         score += 10
 
-    # ADX Trend Strength (10)
     if adx >= 30:
         score += 10
     elif adx >= 25:
@@ -59,11 +54,9 @@ def calculate_smart_money_score(row: Dict) -> Dict:
     elif adx >= 20:
         score += 4
 
-    # ATR Expansion (5)
     if atr > 0:
         score += 5
 
-    # Relative Strength (5)
     if relative_strength >= 80:
         score += 5
     elif relative_strength >= 60:

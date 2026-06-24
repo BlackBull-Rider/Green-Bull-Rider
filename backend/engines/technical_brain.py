@@ -215,7 +215,7 @@ class TechnicalBrain:
 
             "reasons": reasons
         }
-        @staticmethod
+    @staticmethod
     def _macd_analysis(row: Dict):
 
         score = 0
@@ -450,7 +450,7 @@ class TechnicalBrain:
 
             "risk": risk
         }
-        @staticmethod
+    @staticmethod
     def _support_resistance_analysis(row: Dict):
 
         score = 0
@@ -714,7 +714,7 @@ class TechnicalBrain:
                 round(score)
             )
         )
-        @staticmethod
+    @staticmethod
     def analyze(row: Dict):
 
         ema = TechnicalBrain._ema_analysis(row)

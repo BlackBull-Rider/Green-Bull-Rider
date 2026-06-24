@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>IPO Hunter</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#07142c;
+color:white;
+}
+
+.header{
+padding:18px;
+text-align:center;
+font-size:24px;
+font-weight:bold;
+color:#22c55e;
+}
+
+.topbar{
+padding:12px;
+background:#0d1f3f;
+display:flex;
+gap:10px;
+overflow-x:auto;
+}
+
+.topbar a{
+text-decoration:none;
+color:white;
+background:#1e293b;
+padding:10px 15px;
+border-radius:10px;
+white-space:nowrap;
+}
+
+.container{
+padding:10px;
+}
+
+.search{
+margin-bottom:15px;
+}
+
+.search input{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+font-size:16px;
+}
+
+.stock-card{
+background:#16253f;
+border-radius:15px;
+padding:15px;
+margin-bottom:12px;
+}
+
+.symbol{
+font-size:20px;
+font-weight:bold;
+color:#22c55e;
+margin-bottom:10px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px;
+}
+
+.item{
+background:#1d2d4a;
+padding:10px;
+border-radius:10px;
+}
+
+.label{
+font-size:12px;
+color:#94a3b8;
+}
+
+.value{
+font-size:16px;
+font-weight:bold;
+}
+
+.green{
+color:#22c55e;
+}
+
+.red{
+color:#ef4444;
+}
+
+.orange{
+color:#f59e0b;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+🚀 IPO Hunter
+</div>
+
+<div class="topbar">
+<a href="/ui/dashboard">Dashboard</a>
+<a href="/ui/long-term">Long Term</a>
+<a href="/ui/swing">Swing</a>
+<a href="/ui/portfolio">Portfolio</a>
+</div>
+
+<div class="container">
+
+<div class="search">
+<input
+type="text"
+id="search"
+placeholder="Search IPO..."
+onkeyup="filterStocks()">
+</div>
+
+<div id="stocks"></div>
+
+</div>
+
+<script>
+
+let allStocks=[];
+
+fetch("/ipo/")
+.then(r=>r.json())
+.then(data=>{
+
+allStocks=data.results || data;
+renderStocks(allStocks);
+
+});
+
+function renderStocks(data){
+
+let html="";
+
+data.forEach(stock=>{
+
+let cls="green";
+
+if(stock.listing_discount < 0){
+cls="red";
+}
+
+html += `
+
+<div class="stock-card">
+
+<div class="symbol">
+${stock.symbol}
+</div>
+
+<div class="grid">
+
+<div class="item">
+<div class="label">IPO Score</div>
+<div class="value">${stock.ipo_score || 0}</div>
+</div>
+
+<div class="item">
+<div class="label">Listing Discount</div>
+<div class="value ${cls}">
+${stock.listing_discount || 0}%
+</div>
+</div>
+
+<div class="item">
+<div class="label">Volume Surge</div>
+<div class="value">
+${stock.volume_surge || 0}
+</div>
+</div>
+
+<div class="item">
+<div class="label">Master Score</div>
+<div class="value">
+${stock.master_score || 0}
+</div>
+</div>
+
+<div class="item">
+<div class="label">Entry</div>
+<div class="value">
+${stock.entry || 0}
+</div>
+</div>
+
+<div class="item">
+<div class="label">Target</div>
+<div class="value">
+${stock.target1 || 0}
+</div>
+</div>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("stocks").innerHTML=html;
+
+}
+
+function filterStocks(){
+
+let q=document
+.getElementById("search")
+.value
+.toUpperCase();
+
+let filtered=allStocks.filter(
+x=>x.symbol.includes(q)
+);
+
+renderStocks(filtered);
+
+}
+
+</script>
+
+</body>
+</html>

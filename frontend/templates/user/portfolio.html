@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Portfolio</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#07142c;
+color:white;
+}
+
+.header{
+padding:18px;
+text-align:center;
+font-size:24px;
+font-weight:bold;
+color:#22c55e;
+}
+
+.topbar{
+padding:12px;
+background:#0d1f3f;
+display:flex;
+gap:10px;
+overflow-x:auto;
+}
+
+.topbar a{
+text-decoration:none;
+color:white;
+background:#1e293b;
+padding:10px 15px;
+border-radius:10px;
+white-space:nowrap;
+}
+
+.container{
+padding:10px;
+}
+
+.summary{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+margin-bottom:15px;
+}
+
+.card{
+background:#16253f;
+padding:15px;
+border-radius:12px;
+text-align:center;
+}
+
+.card-title{
+font-size:12px;
+color:#94a3b8;
+}
+
+.card-value{
+font-size:20px;
+font-weight:bold;
+margin-top:5px;
+}
+
+.stock-card{
+background:#16253f;
+border-radius:15px;
+padding:15px;
+margin-bottom:12px;
+}
+
+.symbol{
+font-size:20px;
+font-weight:bold;
+color:#22c55e;
+margin-bottom:10px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px;
+}
+
+.item{
+background:#1d2d4a;
+padding:10px;
+border-radius:10px;
+}
+
+.label{
+font-size:12px;
+color:#94a3b8;
+}
+
+.value{
+font-size:16px;
+font-weight:bold;
+}
+
+.green{
+color:#22c55e;
+}
+
+.red{
+color:#ef4444;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+💼 Portfolio
+</div>
+
+<div class="topbar">
+<a href="/ui/dashboard">Dashboard</a>
+<a href="/ui/long-term">Long Term</a>
+<a href="/ui/swing">Swing</a>
+<a href="/ui/ipo">IPO</a>
+</div>
+
+<div class="container">
+
+<div class="summary">
+
+<div class="card">
+<div class="card-title">Invested</div>
+<div class="card-value" id="invested">0</div>
+</div>
+
+<div class="card">
+<div class="card-title">Current</div>
+<div class="card-value" id="current">0</div>
+</div>
+
+<div class="card">
+<div class="card-title">PnL</div>
+<div class="card-value" id="pnl">0</div>
+</div>
+
+<div class="card">
+<div class="card-title">Holdings</div>
+<div class="card-value" id="holdings">0</div>
+</div>
+
+</div>
+
+<div id="portfolio"></div>
+
+</div>
+
+<script>
+
+fetch("/portfolio-analysis/")
+.then(r=>r.json())
+.then(data=>{
+
+document.getElementById("invested").innerText =
+data.invested_value || 0;
+
+document.getElementById("current").innerText =
+data.current_value || 0;
+
+document.getElementById("pnl").innerText =
+data.total_pnl || 0;
+
+document.getElementById("holdings").innerText =
+data.total_stocks || 0;
+
+});
+
+fetch("/portfolio/")
+.then(r=>r.json())
+.then(data=>{
+
+let holdings = data.holdings || data;
+
+let html="";
+
+holdings.forEach(stock=>{
+
+let pnlClass =
+stock.pnl >= 0
+? "green"
+: "red";
+
+html += `
+
+<div class="stock-card">
+
+<div class="symbol">
+${stock.symbol}
+</div>
+
+<div class="grid">
+
+<div class="item">
+<div class="label">Qty</div>
+<div class="value">${stock.qty}</div>
+</div>
+
+<div class="item">
+<div class="label">Avg Price</div>
+<div class="value">${stock.avg_price}</div>
+</div>
+
+<div class="item">
+<div class="label">CMP</div>
+<div class="value">${stock.cmp}</div>
+</div>
+
+<div class="item">
+<div class="label">Invested</div>
+<div class="value">${stock.invested}</div>
+</div>
+
+<div class="item">
+<div class="label">Current</div>
+<div class="value">${stock.current}</div>
+</div>
+
+<div class="item">
+<div class="label">PnL</div>
+<div class="value ${pnlClass}">
+${stock.pnl}
+</div>
+</div>
+
+<div class="item">
+<div class="label">PnL %</div>
+<div class="value ${pnlClass}">
+${stock.pnl_percent}%
+</div>
+</div>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("portfolio").innerHTML = html;
+
+});
+
+</script>
+
+</body>
+</html>

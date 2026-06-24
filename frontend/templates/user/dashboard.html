@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Green Bull Rider V6</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#07142c;
+color:white;
+padding-bottom:90px;
+}
+
+.header{
+padding:20px;
+text-align:center;
+font-size:26px;
+font-weight:bold;
+background:#0d1f3f;
+color:#22c55e;
+}
+
+.container{
+padding:12px;
+}
+
+.section{
+margin-bottom:24px;
+}
+
+.section-title{
+font-size:22px;
+font-weight:bold;
+color:#22c55e;
+margin-bottom:12px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.card{
+background:#16253f;
+border-radius:14px;
+padding:15px;
+}
+
+.click-card{
+display:block;
+text-decoration:none;
+color:white;
+background:#16253f;
+border-radius:14px;
+padding:15px;
+}
+
+.label{
+font-size:12px;
+color:#94a3b8;
+margin-bottom:5px;
+}
+
+.value{
+font-size:24px;
+font-weight:bold;
+}
+
+.list-item{
+background:#16253f;
+border-radius:12px;
+padding:14px;
+margin-bottom:10px;
+}
+
+.stock-symbol{
+font-size:18px;
+font-weight:bold;
+}
+
+.stock-details{
+font-size:12px;
+color:#94a3b8;
+margin-top:4px;
+}
+
+.green{
+color:#22c55e;
+}
+
+.red{
+color:#ef4444;
+}
+
+.nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+display:flex;
+background:#0d1f3f;
+border-top:1px solid #1e335d;
+}
+
+.nav a{
+flex:1;
+text-align:center;
+padding:14px;
+color:white;
+text-decoration:none;
+font-size:14px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+🐂 Green Bull Rider V6
+</div>
+
+<div class="container">
+
+<!-- Market Pulse -->
+
+<div class="section">
+
+<div class="section-title">
+Market Pulse
+</div>
+
+<div class="grid">
+
+<a href="/ui/stocks/52week-high" class="click-card">
+<div class="label">52 Week High</div>
+<div class="value" id="high52">0</div>
+</a>
+
+<div class="card">
+<div class="label">Market Trend</div>
+<div class="value" id="marketTrend">--</div>
+</div>
+
+<a href="/ui/stocks/top-bullish" class="click-card">
+<div class="label">Top Bullish Stock</div>
+<div class="value" id="topBullish">--</div>
+</a>
+
+<a href="/ui/stocks/top-volume" class="click-card">
+<div class="label">Top Volume Stock</div>
+<div class="value" id="topVolume">--</div>
+</a>
+
+</div>
+
+</div>
+
+<!-- Opportunity Radar -->
+
+<div class="section">
+
+<div class="section-title">
+Opportunity Radar
+</div>
+
+<a href="/ui/long-term" class="click-card">
+📈 Long Term Opportunities
+</a>
+
+<br>
+
+<a href="/ui/swing" class="click-card">
+⚡ Swing Opportunities
+</a>
+
+<br>
+
+<a href="/ui/smart-money" class="click-card">
+💰 Smart Money Opportunities
+</a>
+
+</div>
+
+<!-- Top Long Term -->
+
+<div class="section">
+
+<div class="section-title">
+Top 5 Long Term
+</div>
+
+<div id="topLongTerm">
+Loading...
+</div>
+
+</div>
+
+<!-- Top Swing -->
+
+<div class="section">
+
+<div class="section-title">
+Top 5 Swing
+</div>
+
+<div id="topSwing">
+Loading...
+</div>
+
+</div>
+
+<!-- Portfolio -->
+
+<div class="section">
+
+<div class="section-title">
+Portfolio Snapshot
+</div>
+
+<div class="grid">
+
+<div class="card">
+<div class="label">Invested</div>
+<div class="value" id="invested">0</div>
+</div>
+
+<div class="card">
+<div class="label">Current Value</div>
+<div class="value" id="current">0</div>
+</div>
+
+<div class="card">
+<div class="label">PnL</div>
+<div class="value" id="pnl">0</div>
+</div>
+
+<div class="card">
+<div class="label">Holdings</div>
+<div class="value" id="holdings">0</div>
+</div>
+
+</div>
+
+</div>
+
+<!-- Alerts Center -->
+
+<div class="section">
+
+<div class="section-title">
+Alerts Center
+</div>
+
+<div class="grid">
+
+<a href="/ui/alerts/resistance" class="click-card">
+<div class="label">Resistance Breakout</div>
+<div class="value" id="resistanceAlert">0</div>
+</a>
+
+<a href="/ui/alerts/support" class="click-card">
+<div class="label">Support Breakdown</div>
+<div class="value" id="supportAlert">0</div>
+</a>
+
+<a href="/ui/alerts/pattern" class="click-card">
+<div class="label">Pattern Breakout</div>
+<div class="value" id="patternAlert">0</div>
+</a>
+
+<a href="/ui/alerts/volume" class="click-card">
+<div class="label">Volume Explosion</div>
+<div class="value" id="volumeAlert">0</div>
+</a>
+
+</div>
+
+</div>
+
+<!-- Data Engine -->
+
+<div class="section">
+
+<div class="section-title">
+Data Engine Status
+</div>
+
+<div class="grid">
+
+<a href="/ui/stocks/new-listing" class="click-card">
+<div class="label">New Listing</div>
+<div class="value" id="newListing">0</div>
+</a>
+
+<div class="card">
+<div class="label">Database Records</div>
+<div class="value" id="records">0</div>
+</div>
+
+<div class="card">
+<div class="label">System</div>
+<div class="value green">
+ONLINE
+</div>
+</div>
+
+<div class="card">
+<div class="label">Last Sync</div>
+<div class="value" id="lastSync">
+--
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Bottom Navigation -->
+
+<div class="nav">
+
+<a href="/ui/dashboard">Home</a>
+
+<a href="/ui/long-term">Long</a>
+
+<a href="/ui/swing">Swing</a>
+
+<a href="/ui/portfolio">Portfolio</a>
+
+<a href="/ui/profile">Profile</a>
+
+</div>
+
+<script>
+
+/* Dashboard */
+
+fetch("/dashboard/")
+.then(r=>r.json())
+.then(data=>{
+
+document.getElementById("high52").innerText =
+data.high_52w_count || 0;
+
+document.getElementById("marketTrend").innerText =
+data.market_trend || "--";
+
+document.getElementById("topBullish").innerText =
+data.top_bullish_stock || "--";
+
+document.getElementById("topVolume").innerText =
+data.top_volume_stock || "--";
+
+document.getElementById("records").innerText =
+data.total_stocks || 0;
+
+document.getElementById("lastSync").innerText =
+"Today";
+
+});
+
+/* Long Term */
+
+fetch("/dashboard/long-term")
+.then(r=>r.json())
+.then(data=>{
+
+let html="";
+
+data.slice(0,5).forEach(stock=>{
+
+html += `
+<a href="/ui/stock/${stock.symbol}"
+style="text-decoration:none;color:white">
+
+<div class="list-item">
+
+<div class="stock-symbol">
+${stock.symbol}
+</div>
+
+<div class="stock-details">
+Score : ${stock.master_score}
+</div>
+
+</div>
+
+</a>
+`;
+
+});
+
+document.getElementById("topLongTerm").innerHTML =
+html;
+
+});
+
+/* Swing */
+
+fetch("/dashboard/swing")
+.then(r=>r.json())
+.then(data=>{
+
+let html="";
+
+data.slice(0,5).forEach(stock=>{
+
+html += `
+<a href="/ui/stock/${stock.symbol}"
+style="text-decoration:none;color:white">
+
+<div class="list-item">
+
+<div class="stock-symbol">
+${stock.symbol}
+</div>
+
+<div class="stock-details">
+Swing Score : ${stock.swing_score}
+</div>
+
+</div>
+
+</a>
+`;
+
+});
+
+document.getElementById("topSwing").innerHTML =
+html;
+
+});
+
+/* Portfolio */
+
+fetch("/portfolio-analysis/")
+.then(r=>r.json())
+.then(data=>{
+
+document.getElementById("invested").innerText =
+data.invested_value || 0;
+
+document.getElementById("current").innerText =
+data.current_value || 0;
+
+document.getElementById("pnl").innerText =
+data.total_pnl || 0;
+
+document.getElementById("holdings").innerText =
+data.total_stocks || 0;
+
+})
+.catch(()=>{});
+
+</script>
+
+</body>
+</html>

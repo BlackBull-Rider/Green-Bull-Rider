@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Swing Screener</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#07142c;
+color:white;
+}
+
+.header{
+padding:18px;
+text-align:center;
+font-size:24px;
+font-weight:bold;
+color:#22c55e;
+}
+
+.topbar{
+padding:12px;
+background:#0d1f3f;
+display:flex;
+gap:10px;
+overflow-x:auto;
+}
+
+.topbar a{
+text-decoration:none;
+color:white;
+background:#1e293b;
+padding:10px 15px;
+border-radius:10px;
+white-space:nowrap;
+}
+
+.container{
+padding:10px;
+}
+
+.search{
+margin-bottom:15px;
+}
+
+.search input{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+font-size:16px;
+}
+
+.stock-card{
+background:#16253f;
+border-radius:15px;
+padding:15px;
+margin-bottom:12px;
+}
+
+.symbol{
+font-size:20px;
+font-weight:bold;
+color:#22c55e;
+margin-bottom:10px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px;
+}
+
+.item{
+background:#1d2d4a;
+padding:10px;
+border-radius:10px;
+}
+
+.label{
+font-size:12px;
+color:#94a3b8;
+}
+
+.value{
+font-size:16px;
+font-weight:bold;
+}
+
+.buy{
+color:#22c55e;
+}
+
+.watch{
+color:#f59e0b;
+}
+
+.avoid{
+color:#ef4444;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+⚡ Swing Screener
+</div>
+
+<div class="topbar">
+<a href="/ui/dashboard">Dashboard</a>
+<a href="/ui/long-term">Long Term</a>
+<a href="/ui/ipo">IPO</a>
+<a href="/ui/portfolio">Portfolio</a>
+</div>
+
+<div class="container">
+
+<div class="search">
+<input
+type="text"
+id="search"
+placeholder="Search Symbol..."
+onkeyup="filterStocks()">
+</div>
+
+<div id="stocks"></div>
+
+</div>
+
+<script>
+
+let allStocks=[];
+
+fetch("/swing/")
+.then(r=>r.json())
+.then(data=>{
+
+allStocks=data.results;
+renderStocks(allStocks);
+
+});
+
+function renderStocks(data){
+
+let html="";
+
+data.forEach(stock=>{
+
+let signalClass="buy";
+
+if(stock.signal==="WATCH"){
+signalClass="watch";
+}
+
+if(stock.signal==="AVOID"){
+signalClass="avoid";
+}
+
+html += `
+
+<div class="stock-card">
+
+<div class="symbol">
+${stock.symbol}
+</div>
+
+<div class="grid">
+
+<div class="item">
+<div class="label">Swing Score</div>
+<div class="value">${stock.swing_score}</div>
+</div>
+
+<div class="item">
+<div class="label">Smart Money</div>
+<div class="value">${stock.smart_money_score}</div>
+</div>
+
+<div class="item">
+<div class="label">Master Score</div>
+<div class="value">${stock.master_score}</div>
+</div>
+
+<div class="item">
+<div class="label">Institutional</div>
+<div class="value">${stock.institutional_score}</div>
+</div>
+
+<div class="item">
+<div class="label">Entry</div>
+<div class="value">${stock.entry}</div>
+</div>
+
+<div class="item">
+<div class="label">Stop Loss</div>
+<div class="value">${stock.sl}</div>
+</div>
+
+<div class="item">
+<div class="label">Target 1</div>
+<div class="value">${stock.target1}</div>
+</div>
+
+<div class="item">
+<div class="label">R:R</div>
+<div class="value">${stock.rr}</div>
+</div>
+
+<div class="item">
+<div class="label">Smart Activity</div>
+<div class="value">${stock.smart_money_activity}</div>
+</div>
+
+<div class="item">
+<div class="label">Signal</div>
+<div class="value ${signalClass}">
+${stock.signal}
+</div>
+</div>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("stocks").innerHTML=html;
+
+}
+
+function filterStocks(){
+
+const q=document
+.getElementById("search")
+.value
+.toUpperCase();
+
+const filtered=allStocks.filter(
+x=>x.symbol.includes(q)
+);
+
+renderStocks(filtered);
+
+}
+
+</script>
+
+</body>
+</html>

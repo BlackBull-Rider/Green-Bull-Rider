@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Profile</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#07142c;
+color:white;
+}
+
+.header{
+padding:18px;
+text-align:center;
+font-size:24px;
+font-weight:bold;
+color:#22c55e;
+}
+
+.topbar{
+padding:12px;
+background:#0d1f3f;
+display:flex;
+gap:10px;
+overflow-x:auto;
+}
+
+.topbar a{
+text-decoration:none;
+color:white;
+background:#1e293b;
+padding:10px 15px;
+border-radius:10px;
+white-space:nowrap;
+}
+
+.container{
+padding:10px;
+}
+
+.card{
+background:#16253f;
+padding:15px;
+border-radius:12px;
+margin-bottom:12px;
+}
+
+.card h3{
+margin-bottom:10px;
+color:#22c55e;
+}
+
+.row{
+padding:10px 0;
+border-bottom:1px solid #233656;
+}
+
+.logout{
+background:#dc2626;
+text-align:center;
+padding:15px;
+border-radius:10px;
+font-weight:bold;
+margin-top:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+👤 Profile
+</div>
+
+<div class="topbar">
+<a href="/ui/dashboard">Dashboard</a>
+<a href="/ui/screener">Screener</a>
+<a href="/ui/portfolio">Portfolio</a>
+<a href="/ui/market">Market</a>
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<h3>User Information</h3>
+
+<div class="row">
+Username
+</div>
+
+<div class="row">
+Subscription: Free
+</div>
+
+<div class="row">
+NSE Market
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Settings</h3>
+
+<div class="row">
+Dark Mode
+</div>
+
+<div class="row">
+Notifications
+</div>
+
+<div class="row">
+Watchlists
+</div>
+
+</div>
+
+<div class="logout">
+Logout
+</div>
+
+</div>
+
+</body>
+</html>

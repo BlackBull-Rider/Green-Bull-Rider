@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Market Monitor</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#07142c;
+color:white;
+}
+
+.header{
+padding:18px;
+text-align:center;
+font-size:24px;
+font-weight:bold;
+color:#22c55e;
+}
+
+.topbar{
+padding:12px;
+background:#0d1f3f;
+display:flex;
+gap:10px;
+overflow-x:auto;
+}
+
+.topbar a{
+text-decoration:none;
+color:white;
+background:#1e293b;
+padding:10px 15px;
+border-radius:10px;
+white-space:nowrap;
+}
+
+.container{
+padding:10px;
+}
+
+.card{
+background:#16253f;
+padding:15px;
+border-radius:12px;
+margin-bottom:12px;
+}
+
+.card h3{
+margin-bottom:10px;
+color:#22c55e;
+}
+
+.table{
+background:#1d2d4a;
+padding:10px;
+border-radius:10px;
+margin-bottom:8px;
+}
+
+.symbol{
+font-weight:bold;
+font-size:18px;
+}
+
+.green{
+color:#22c55e;
+}
+
+.red{
+color:#ef4444;
+}
+
+.orange{
+color:#f59e0b;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+🌍 Market Monitor
+</div>
+
+<div class="topbar">
+<a href="/ui/dashboard">Dashboard</a>
+<a href="/ui/screener">Screener</a>
+<a href="/ui/portfolio">Portfolio</a>
+<a href="/ui/profile">Profile</a>
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<h3>📈 Top Gainers</h3>
+
+<div id="gainers">
+Loading...
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>📉 Top Losers</h3>
+
+<div id="losers">
+Loading...
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>💰 Smart Money Activity</h3>
+
+<div id="smartmoney">
+Loading...
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>⚡ Strong Breakouts</h3>
+
+<div id="breakouts">
+Loading...
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+fetch("/swing/")
+.then(r=>r.json())
+.then(data=>{
+
+let stocks = data.results || [];
+
+let gainers = stocks
+.slice()
+.sort((a,b)=>b.master_score-a.master_score)
+.slice(0,10);
+
+let html="";
+
+gainers.forEach(x=>{
+
+html += `
+<div class="table">
+<div class="symbol">${x.symbol}</div>
+Master Score: ${x.master_score}
+</div>
+`;
+
+});
+
+document.getElementById("gainers").innerHTML=html;
+
+});
+
+fetch("/long-term/")
+.then(r=>r.json())
+.then(data=>{
+
+let stocks = data.results || [];
+
+let losers = stocks
+.slice()
+.sort((a,b)=>a.master_score-b.master_score)
+.slice(0,10);
+
+let html="";
+
+losers.forEach(x=>{
+
+html += `
+<div class="table">
+<div class="symbol">${x.symbol}</div>
+Master Score: ${x.master_score}
+</div>
+`;
+
+});
+
+document.getElementById("losers").innerHTML=html;
+
+});
+
+fetch("/swing/")
+.then(r=>r.json())
+.then(data=>{
+
+let stocks=data.results||[];
+
+let html="";
+
+stocks
+.filter(x=>x.smart_money_score>=90)
+.slice(0,20)
+.forEach(x=>{
+
+html += `
+<div class="table">
+<div class="symbol">${x.symbol}</div>
+${x.smart_money_activity}
+</div>
+`;
+
+});
+
+document.getElementById("smartmoney").innerHTML=html;
+
+});
+
+fetch("/swing/")
+.then(r=>r.json())
+.then(data=>{
+
+let stocks=data.results||[];
+
+let html="";
+
+stocks
+.filter(x=>x.swing_score>=95)
+.slice(0,20)
+.forEach(x=>{
+
+html += `
+<div class="table">
+<div class="symbol">${x.symbol}</div>
+Swing Score: ${x.swing_score}
+</div>
+`;
+
+});
+
+document.getElementById("breakouts").innerHTML=html;
+
+});
+
+</script>
+
+</body>
+</html>

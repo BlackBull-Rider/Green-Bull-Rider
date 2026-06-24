@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Admin Dashboard</title>
+
+<style>
+
+body{
+background:#07142c;
+color:white;
+font-family:Arial;
+margin:0;
+}
+
+.header{
+background:#111827;
+padding:15px;
+text-align:center;
+font-size:24px;
+font-weight:bold;
+color:#22c55e;
+}
+
+.cards{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+padding:15px;
+}
+
+.card{
+background:#16253f;
+padding:20px;
+border-radius:12px;
+text-align:center;
+}
+
+.value{
+font-size:26px;
+font-weight:bold;
+margin-top:8px;
+}
+
+.menu{
+padding:15px;
+}
+
+.menu a{
+display:block;
+background:#16253f;
+padding:15px;
+margin-bottom:10px;
+border-radius:10px;
+text-decoration:none;
+color:white;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+🛡 Admin Dashboard
+</div>
+
+<div class="cards">
+
+<div class="card">
+Users
+<div class="value">0</div>
+</div>
+
+<div class="card">
+Pending
+<div class="value">0</div>
+</div>
+
+<div class="card">
+Universe
+<div class="value">2395</div>
+</div>
+
+<div class="card">
+System
+<div class="value">OK</div>
+</div>
+
+</div>
+
+<div class="menu">
+
+<a href="/admin/users">
+👥 Manage Users
+</a>
+
+<a href="/admin/data-engine">
+⚙ Data Engine
+</a>
+
+<a href="/admin/settings">
+🔧 Settings
+</a>
+
+</div>
+
+</body>
+</html>

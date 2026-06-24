@@ -474,8 +474,8 @@ class TechnicalBrain:
         nearest_resistance = None
 
         supports = [
-            x for x in [s1, s2, s3]
-            if x > 0
+    x for x in [s1, s2, s3]
+    if 0 < x < close
         ]
 
         resistances = [

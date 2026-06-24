@@ -1,29 +1,20 @@
-from typing import Dict, List
-from math import fabs
+from typing import Dict
 
 
 TECHNICAL_WEIGHTS = {
-
     "EMA_ALIGNMENT": 20,
     "PRICE_ABOVE_EMA20": 4,
     "PRICE_ABOVE_EMA50": 6,
     "PRICE_ABOVE_EMA200": 10,
-
     "RSI_STRONG": 10,
     "RSI_HEALTHY": 6,
-
     "ADX_STRONG": 10,
     "ADX_MODERATE": 6,
-
     "MACD_BULLISH": 8,
-
     "SUPERTREND": 10,
-
     "VWAP": 5,
-
     "HIGH_VOLUME": 10,
     "MEDIUM_VOLUME": 5,
-
     "BREAKOUT": 10
 }
 
@@ -31,39 +22,31 @@ TECHNICAL_WEIGHTS = {
 class TechnicalBrain:
 
     @staticmethod
-    def _safe(value):
-
-        if value is None:
-            return 0
-
-        return float(value)
+    def _safe(value) -> float:
+        try:
+            if value is None:
+                return 0.0
+            return float(value)
+        except Exception:
+            return 0.0
 
     @staticmethod
-    def _ema_analysis(row):
+    def _ema_analysis(row: Dict):
 
         score = 0
-
         reasons = []
 
-        close = TechnicalBrain._safe(
-            row.get("close")
-        )
+        close = TechnicalBrain._safe(row.get("close"))
 
-        ema20 = TechnicalBrain._safe(
-            row.get("ema20")
-        )
-
-        ema50 = TechnicalBrain._safe(
-            row.get("ema50")
-        )
-
-        ema200 = TechnicalBrain._safe(
-            row.get("ema200")
-        )
+        ema20 = TechnicalBrain._safe(row.get("ema20"))
+        ema50 = TechnicalBrain._safe(row.get("ema50"))
+        ema200 = TechnicalBrain._safe(row.get("ema200"))
 
         trend = "BEARISH"
 
         if ema20 > ema50 > ema200:
+
+            trend = "STRONG BULLISH"
 
             score += TECHNICAL_WEIGHTS["EMA_ALIGNMENT"]
 
@@ -71,17 +54,15 @@ class TechnicalBrain:
                 "Perfect EMA Alignment"
             )
 
-            trend = "STRONG BULLISH"
-
         elif ema20 > ema50:
+
+            trend = "BULLISH"
 
             score += 10
 
             reasons.append(
                 "Bullish EMA Structure"
             )
-
-            trend = "BULLISH"
 
         if close > ema20:
 
@@ -102,16 +83,13 @@ class TechnicalBrain:
             ]
 
         return {
-
             "score": score,
-
             "trend": trend,
-
             "reasons": reasons
         }
 
     @staticmethod
-    def _rsi_analysis(row):
+    def _rsi_analysis(row: Dict):
 
         score = 0
 
@@ -157,7 +135,9 @@ class TechnicalBrain:
 
             score -= 8
 
-            state = "WEAK"
+            reasons.append(
+                "Weak RSI"
+            )
 
         return {
 
@@ -165,16 +145,13 @@ class TechnicalBrain:
 
             "state": state,
 
-            "value": round(
-                rsi,
-                2
-            ),
+            "value": round(rsi, 2),
 
             "reasons": reasons
         }
 
     @staticmethod
-    def _adx_analysis(row):
+    def _adx_analysis(row: Dict):
 
         score = 0
 
@@ -196,11 +173,11 @@ class TechnicalBrain:
 
         if adx >= 35:
 
+            strength = "VERY STRONG"
+
             score += TECHNICAL_WEIGHTS[
                 "ADX_STRONG"
             ]
-
-            strength = "VERY STRONG"
 
             reasons.append(
                 "Strong Trend"
@@ -208,17 +185,17 @@ class TechnicalBrain:
 
         elif adx >= 25:
 
+            strength = "STRONG"
+
             score += TECHNICAL_WEIGHTS[
                 "ADX_MODERATE"
             ]
 
-            strength = "STRONG"
-
         elif adx >= 20:
 
-            score += 3
-
             strength = "MODERATE"
+
+            score += 3
 
         if plus_di > minus_di:
 
@@ -234,42 +211,29 @@ class TechnicalBrain:
 
             "strength": strength,
 
-            "value": round(
-                adx,
-                2
-            ),
+            "value": round(adx, 2),
 
             "reasons": reasons
         }
-
-@staticmethod
-    def _macd_analysis(row):
+        @staticmethod
+    def _macd_analysis(row: Dict):
 
         score = 0
-
         reasons = []
 
-        macd = TechnicalBrain._safe(
-            row.get("macd")
-        )
-
-        signal = TechnicalBrain._safe(
-            row.get("macd_signal")
-        )
-
-        hist = TechnicalBrain._safe(
-            row.get("macd_hist")
-        )
+        macd = TechnicalBrain._safe(row.get("macd"))
+        signal = TechnicalBrain._safe(row.get("macd_signal"))
+        hist = TechnicalBrain._safe(row.get("macd_hist"))
 
         state = "BEARISH"
 
         if macd > signal:
 
+            state = "BULLISH"
+
             score += TECHNICAL_WEIGHTS[
                 "MACD_BULLISH"
             ]
-
-            state = "BULLISH"
 
             reasons.append(
                 "MACD Bullish Crossover"
@@ -280,7 +244,7 @@ class TechnicalBrain:
                 score += 2
 
                 reasons.append(
-                    "Positive Histogram"
+                    "Positive MACD Histogram"
                 )
 
         else:
@@ -293,16 +257,13 @@ class TechnicalBrain:
 
             "state": state,
 
-            "histogram": round(
-                hist,
-                2
-            ),
+            "histogram": round(hist, 2),
 
             "reasons": reasons
         }
 
     @staticmethod
-    def _supertrend_analysis(row):
+    def _supertrend_analysis(row: Dict):
 
         score = 0
 
@@ -316,15 +277,15 @@ class TechnicalBrain:
             row.get("supertrend")
         )
 
-        state = "SELL"
+        signal = "SELL"
 
         if close > supertrend:
+
+            signal = "BUY"
 
             score += TECHNICAL_WEIGHTS[
                 "SUPERTREND"
             ]
-
-            state = "BUY"
 
             reasons.append(
                 "Above Supertrend"
@@ -338,82 +299,13 @@ class TechnicalBrain:
 
             "score": score,
 
-            "signal": state,
+            "signal": signal,
 
             "reasons": reasons
         }
 
     @staticmethod
-    def _volume_analysis(row):
-
-        score = 0
-
-        reasons = []
-
-        volume = TechnicalBrain._safe(
-            row.get("volume")
-        )
-
-        avg = TechnicalBrain._safe(
-            row.get("volume_avg20")
-        )
-
-        ratio = 0
-
-        if avg > 0:
-
-            ratio = volume / avg
-
-        strength = "LOW"
-
-        if ratio >= 2:
-
-            score += TECHNICAL_WEIGHTS[
-                "HIGH_VOLUME"
-            ]
-
-            strength = "VERY HIGH"
-
-            reasons.append(
-                "Volume Explosion"
-            )
-
-        elif ratio >= 1.5:
-
-            score += TECHNICAL_WEIGHTS[
-                "MEDIUM_VOLUME"
-            ]
-
-            strength = "HIGH"
-
-            reasons.append(
-                "Strong Volume"
-            )
-
-        elif ratio >= 1:
-
-            strength = "NORMAL"
-
-        else:
-
-            strength = "LOW"
-
-        return {
-
-            "score": score,
-
-            "ratio": round(
-                ratio,
-                2
-            ),
-
-            "strength": strength,
-
-            "reasons": reasons
-        }
-
-    @staticmethod
-    def _vwap_analysis(row):
+    def _vwap_analysis(row: Dict):
 
         score = 0
 
@@ -431,16 +323,20 @@ class TechnicalBrain:
 
         if close > vwap:
 
+            signal = "ABOVE"
+
             score += TECHNICAL_WEIGHTS[
                 "VWAP"
             ]
-
-            signal = "ABOVE"
 
             reasons.append(
                 "Trading Above VWAP"
             )
 
+        else:
+
+            score -= 2
+
         return {
 
             "score": score,
@@ -451,142 +347,73 @@ class TechnicalBrain:
         }
 
     @staticmethod
-    def _breakout_analysis(row):
+    def _volume_analysis(row: Dict):
 
         score = 0
 
         reasons = []
 
-        breakout = TechnicalBrain._safe(
-            row.get("breakout_score")
+        volume = TechnicalBrain._safe(
+            row.get("volume")
         )
 
-        signal = "NO"
+        avg_volume = TechnicalBrain._safe(
+            row.get("volume_avg20")
+        )
 
-        if breakout >= 80:
+        ratio = 0.0
 
-            score += 10
+        if avg_volume > 0:
 
-            signal = "STRONG"
+            ratio = volume / avg_volume
+
+        strength = "LOW"
+
+        if ratio >= 2:
+
+            strength = "VERY HIGH"
+
+            score += TECHNICAL_WEIGHTS[
+                "HIGH_VOLUME"
+            ]
 
             reasons.append(
-                "Strong Breakout"
+                "Volume Explosion"
             )
 
-        elif breakout >= 60:
+        elif ratio >= 1.5:
 
-            score += 6
+            strength = "HIGH"
 
-            signal = "MODERATE"
+            score += TECHNICAL_WEIGHTS[
+                "MEDIUM_VOLUME"
+            ]
 
             reasons.append(
-                "Possible Breakout"
+                "Strong Buying Volume"
             )
+
+        elif ratio >= 1:
+
+            strength = "NORMAL"
+
+        else:
+
+            score -= 2
 
         return {
 
             "score": score,
 
-            "signal": signal,
+            "ratio": round(ratio, 2),
 
-            "breakout_score": breakout,
-
-            "reasons": reasons
-        }
-
-@staticmethod
-    def _support_resistance_analysis(row):
-
-        score = 0
-
-        reasons = []
-
-        close = TechnicalBrain._safe(
-            row.get("close")
-        )
-
-        r1 = TechnicalBrain._safe(
-            row.get("r1")
-        )
-
-        r2 = TechnicalBrain._safe(
-            row.get("r2")
-        )
-
-        s1 = TechnicalBrain._safe(
-            row.get("s1")
-        )
-
-        s2 = TechnicalBrain._safe(
-            row.get("s2")
-        )
-
-        signal = "NEUTRAL"
-
-        resistance_distance = 0
-
-        support_distance = 0
-
-        if r1 > 0:
-
-            resistance_distance = (
-                (r1 - close) / close
-            ) * 100
-
-        if s1 > 0:
-
-            support_distance = (
-                (close - s1) / close
-            ) * 100
-
-        if close > r1 and r1 > 0:
-
-            score += 10
-
-            signal = "RESISTANCE BREAKOUT"
-
-            reasons.append(
-                "Price Above R1"
-            )
-
-        elif resistance_distance <= 2:
-
-            score += 5
-
-            reasons.append(
-                "Near Resistance"
-            )
-
-        if support_distance <= 2:
-
-            score += 4
-
-            reasons.append(
-                "Support Holding"
-            )
-
-        return {
-
-            "score": score,
-
-            "signal": signal,
-
-            "resistance_distance":
-                round(resistance_distance,2),
-
-            "support_distance":
-                round(support_distance,2),
+            "strength": strength,
 
             "reasons": reasons
         }
-
 
     @staticmethod
-    def _volatility_analysis(row):
-
-        score = 0
-
-        reasons = []
+    def _atr_analysis(row: Dict):
 
         atr = TechnicalBrain._safe(
             row.get("atr")
@@ -596,57 +423,172 @@ class TechnicalBrain:
             row.get("close")
         )
 
-        volatility = 0
+        risk = "HIGH"
+
+        risk_pct = 0.0
 
         if close > 0:
 
-            volatility = (
-                atr / close
-            ) * 100
+            risk_pct = (atr / close) * 100
 
-        state = "NORMAL"
+        if risk_pct <= 2:
 
-        if volatility < 2:
+            risk = "LOW"
 
-            score += 6
+        elif risk_pct <= 4:
 
-            state = "LOW"
+            risk = "MEDIUM"
+
+        return {
+
+            "atr": round(atr, 2),
+
+            "risk_percent": round(
+                risk_pct,
+                2
+            ),
+
+            "risk": risk
+        }
+        @staticmethod
+    def _support_resistance_analysis(row: Dict):
+
+        score = 0
+        reasons = []
+
+        close = TechnicalBrain._safe(row.get("close"))
+
+        pivot = TechnicalBrain._safe(row.get("pivot"))
+
+        r1 = TechnicalBrain._safe(row.get("r1"))
+        r2 = TechnicalBrain._safe(row.get("r2"))
+        r3 = TechnicalBrain._safe(row.get("r3"))
+
+        s1 = TechnicalBrain._safe(row.get("s1"))
+        s2 = TechnicalBrain._safe(row.get("s2"))
+        s3 = TechnicalBrain._safe(row.get("s3"))
+
+        signal = "NEUTRAL"
+
+        nearest_support = None
+        nearest_resistance = None
+
+        supports = [
+            x for x in [s1, s2, s3]
+            if x > 0
+        ]
+
+        resistances = [
+            x for x in [r1, r2, r3]
+            if x > close
+        ]
+
+        if supports:
+
+            nearest_support = max(supports)
+
+        if resistances:
+
+            nearest_resistance = min(resistances)
+
+        if (
+            nearest_resistance
+            and close > nearest_resistance
+        ):
+
+            signal = "RESISTANCE BREAKOUT"
+
+            score += 10
 
             reasons.append(
-                "Controlled Volatility"
+                "Resistance Broken"
             )
 
-        elif volatility < 4:
+        elif (
+            nearest_support
+            and close > nearest_support
+        ):
 
-            score += 3
-
-            state = "MEDIUM"
-
-        else:
-
-            score -= 3
-
-            state = "HIGH"
+            score += 4
 
             reasons.append(
-                "High Volatility"
+                "Trading Above Support"
             )
+
+        if close > pivot:
+
+            score += 2
 
         return {
 
             "score": score,
 
-            "volatility":
-                round(volatility,2),
+            "signal": signal,
 
-            "state": state,
+            "pivot": round(pivot, 2),
+
+            "nearest_support":
+                nearest_support,
+
+            "nearest_resistance":
+                nearest_resistance,
 
             "reasons": reasons
         }
 
+    @staticmethod
+    def _breakout_analysis(row: Dict):
+
+        score = 0
+
+        reasons = []
+
+        breakout = TechnicalBrain._safe(
+            row.get("breakout_score")
+        )
+
+        signal = "NONE"
+
+        if breakout >= 80:
+
+            signal = "STRONG"
+
+            score += 10
+
+            reasons.append(
+                "High Probability Breakout"
+            )
+
+        elif breakout >= 60:
+
+            signal = "MODERATE"
+
+            score += 6
+
+            reasons.append(
+                "Potential Breakout"
+            )
+
+        elif breakout >= 40:
+
+            signal = "WATCH"
+
+            score += 2
+
+        return {
+
+            "score": score,
+
+            "signal": signal,
+
+            "breakout_score":
+                breakout,
+
+            "reasons": reasons
+        }
 
     @staticmethod
-    def _momentum_analysis(row):
+    def _momentum_analysis(row: Dict):
 
         score = 0
 
@@ -676,9 +618,9 @@ class TechnicalBrain:
             and macd > signal
         ):
 
-            score += 15
-
             state = "STRONG"
+
+            score += 15
 
             reasons.append(
                 "Momentum Confirmed"
@@ -688,9 +630,9 @@ class TechnicalBrain:
             rsi >= 50
         ):
 
-            score += 8
-
             state = "MODERATE"
+
+            score += 8
 
         return {
 
@@ -701,34 +643,79 @@ class TechnicalBrain:
             "reasons": reasons
         }
 
+    @staticmethod
+    def _volatility_analysis(row: Dict):
+
+        score = 0
+
+        reasons = []
+
+        atr = TechnicalBrain._safe(
+            row.get("atr")
+        )
+
+        close = TechnicalBrain._safe(
+            row.get("close")
+        )
+
+        state = "HIGH"
+
+        volatility = 0
+
+        if close > 0:
+
+            volatility = (
+                atr / close
+            ) * 100
+
+        if volatility <= 2:
+
+            state = "LOW"
+
+            score += 6
+
+            reasons.append(
+                "Low Volatility"
+            )
+
+        elif volatility <= 4:
+
+            state = "MEDIUM"
+
+            score += 3
+
+        else:
+
+            score -= 2
+
+            reasons.append(
+                "High Volatility"
+            )
+
+        return {
+
+            "score": score,
+
+            "volatility":
+                round(volatility, 2),
+
+            "state": state,
+
+            "reasons": reasons
+        }
 
     @staticmethod
-    def _confidence_analysis(total):
+    def _confidence(score: float):
 
-        if total >= 90:
-
-            return 98
-
-        if total >= 80:
-
-            return 92
-
-        if total >= 70:
-
-            return 85
-
-        if total >= 60:
-
-            return 75
-
-        if total >= 50:
-
-            return 65
-
-        return 40
-
-@staticmethod
-    def analyze(row):
+        return max(
+            0,
+            min(
+                100,
+                round(score)
+            )
+        )
+        @staticmethod
+    def analyze(row: Dict):
 
         ema = TechnicalBrain._ema_analysis(row)
 
@@ -740,42 +727,32 @@ class TechnicalBrain:
 
         supertrend = TechnicalBrain._supertrend_analysis(row)
 
-        volume = TechnicalBrain._volume_analysis(row)
-
         vwap = TechnicalBrain._vwap_analysis(row)
 
-        breakout = TechnicalBrain._breakout_analysis(row)
+        volume = TechnicalBrain._volume_analysis(row)
+
+        atr = TechnicalBrain._atr_analysis(row)
 
         support = TechnicalBrain._support_resistance_analysis(row)
 
-        volatility = TechnicalBrain._volatility_analysis(row)
+        breakout = TechnicalBrain._breakout_analysis(row)
 
         momentum = TechnicalBrain._momentum_analysis(row)
 
+        volatility = TechnicalBrain._volatility_analysis(row)
+
         total = (
-
             ema["score"]
-
             + rsi["score"]
-
             + adx["score"]
-
             + macd["score"]
-
             + supertrend["score"]
-
-            + volume["score"]
-
             + vwap["score"]
-
-            + breakout["score"]
-
+            + volume["score"]
             + support["score"]
-
-            + volatility["score"]
-
+            + breakout["score"]
             + momentum["score"]
-
+            + volatility["score"]
         )
 
         total = max(
@@ -786,7 +763,7 @@ class TechnicalBrain:
             )
         )
 
-        confidence = TechnicalBrain._confidence_analysis(
+        confidence = TechnicalBrain._confidence(
             total
         )
 
@@ -794,43 +771,35 @@ class TechnicalBrain:
 
         allocation = 0
 
-        risk = "HIGH"
-
-        if total >= 85:
+        if total >= 90:
 
             signal = "STRONG BUY"
 
             allocation = 20
 
-            risk = "LOW"
-
-        elif total >= 75:
+        elif total >= 80:
 
             signal = "BUY"
 
             allocation = 15
 
-            risk = "LOW"
-
-        elif total >= 60:
+        elif total >= 65:
 
             signal = "ACCUMULATE"
 
             allocation = 10
 
-            risk = "MEDIUM"
-
-        elif total >= 45:
+        elif total >= 50:
 
             signal = "HOLD"
 
-            allocation = 0
+        else:
 
-            risk = "MEDIUM"
+            signal = "SELL"
 
         reasons = []
 
-        for item in [
+        for engine in [
 
             ema,
 
@@ -842,28 +811,26 @@ class TechnicalBrain:
 
             supertrend,
 
-            volume,
-
             vwap,
 
-            breakout,
+            volume,
 
             support,
 
-            volatility,
+            breakout,
 
-            momentum
+            momentum,
+
+            volatility
 
         ]:
 
             reasons.extend(
-                item["reasons"]
+                engine["reasons"]
             )
 
         reasons = list(
-            dict.fromkeys(
-                reasons
-            )
+            dict.fromkeys(reasons)
         )
 
         return {
@@ -875,8 +842,6 @@ class TechnicalBrain:
             "confidence": confidence,
 
             "allocation": allocation,
-
-            "risk": risk,
 
             "trend": ema["trend"],
 
@@ -894,14 +859,14 @@ class TechnicalBrain:
             "breakout_score":
                 breakout["breakout_score"],
 
-            "support_signal":
-                support["signal"],
+            "nearest_support":
+                support["nearest_support"],
 
-            "support_distance":
-                support["support_distance"],
+            "nearest_resistance":
+                support["nearest_resistance"],
 
-            "resistance_distance":
-                support["resistance_distance"],
+            "pivot":
+                support["pivot"],
 
             "volatility":
                 volatility["volatility"],
@@ -909,6 +874,14 @@ class TechnicalBrain:
             "volatility_state":
                 volatility["state"],
 
-            "reasons": reasons
+            "atr":
+                atr["atr"],
 
+            "risk":
+                atr["risk"],
+
+            "risk_percent":
+                atr["risk_percent"],
+
+            "reasons": reasons
         }
